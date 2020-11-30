@@ -25,23 +25,39 @@ import sys
 import csv
 import re
 
-for line in sys.stdin:
+csv.field_size_limit(sys.maxsize)
+
+for row in csv.reader(sys.stdin):
+#for line in sys.stdin:
     # print("Printing line")
     # print(line)
     # print("#########################################################")
-    words = line.split()
-    header = words[0].split(",")
-    doc_id = header[0]
-    doc_title = header[1]
+    # print("row is:")
+    # print(row[2])
+    # print(words)
+    
+    doc_id = row[0]
+    doc_title = row[1]
     doc_title = re.sub(r'[^a-zA-Z0-9]+', '', doc_title)
     # print("doc_id is " + doc_id)
     # print("doc_title is " + doc_title)
-    words.append(doc_title)
-    words.pop(0)
-    for word in words:
-        if word.isspace():
-            continue
+    content = row[2].split()
+    content.append(doc_title)
+
+    # Get stopwords list
+    stopwords = []
+    with open("stopwords.txt", "r") as docc:
+        for line in docc.readlines():
+            line = line.lower()
+            line = line.rstrip()
+            stopwords.append(line)
+    # print("N is " + str(total_doc_num))
+
+    for word in content:
         word = re.sub(r'[^a-zA-Z0-9]+', '', word)
         word = word.lower()
+        word = word.rstrip()
+        if word.isspace() or word in stopwords:
+            continue
         print(word + "\t" + doc_id)
 

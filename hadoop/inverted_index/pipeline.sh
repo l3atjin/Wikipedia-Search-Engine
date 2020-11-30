@@ -52,16 +52,23 @@ hadoop \
   -mapper ./map1.py \
   -reducer ./reduce1.py \
 
+echo before comment
+: <<'END'
+# Run second MapReduce job
+
 hadoop \
   jar ../hadoop-streaming-2.7.2.jar \
-  -input tmp \
+  -input input \
   -output output2 \
   -mapper ./map2.py \
   -reducer ./reduce2.py \
 
-echo before comment
-: <<'END'
-# Run second MapReduce job
+hadoop \
+  jar ../hadoop-streaming-2.7.2.jar \
+  -input tmp \
+  -output output3 \
+  -mapper ./map3.py \
+  -reducer ./reduce3.py \
 
 hadoop \
   jar ../hadoop-streaming-2.7.2.jar \
