@@ -18,11 +18,8 @@ set -Eeuo pipefail
 rm -rf output1
 rm -rf output0
 rm -rf output2
-rm -rf tmp
-rm -rf idf.txt
-rm -rf term_freq.txt
+rm -rf output3
 rm -rf total_document_count.txt
-mkdir tmp
 
 # job0 only counts the num of docs
 # jobn-1's output must be jobn's input
@@ -52,6 +49,20 @@ hadoop \
   -mapper ./map1.py \
   -reducer ./reduce1.py \
 
+hadoop \
+  jar ../hadoop-streaming-2.7.2.jar \
+  -input output1 \
+  -output output2 \
+  -mapper ./map2.py \
+  -reducer ./reduce2.py \
+
+hadoop \
+  jar ../hadoop-streaming-2.7.2.jar \
+  -input output2 \
+  -output output3 \
+  -mapper ./map3.py \
+  -reducer ./reduce3.py \
+
 echo before comment
 : <<'END'
 # Run second MapReduce job
@@ -63,12 +74,7 @@ hadoop \
   -mapper ./map2.py \
   -reducer ./reduce2.py \
 
-hadoop \
-  jar ../hadoop-streaming-2.7.2.jar \
-  -input tmp \
-  -output output3 \
-  -mapper ./map3.py \
-  -reducer ./reduce3.py \
+
 
 hadoop \
   jar ../hadoop-streaming-2.7.2.jar \

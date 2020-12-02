@@ -14,6 +14,7 @@ import sys
 import collections
 import math
 import pathlib
+import json
 
 WORDDICT = {}
 for line in sys.stdin:
@@ -21,7 +22,7 @@ for line in sys.stdin:
     value = line.split("\t")[1]
     if term.isspace() or not term:
         continue
-    
+
     temp = str(term) + " " + str(value)
     if temp in WORDDICT:
         WORDDICT[temp] += 1
@@ -36,6 +37,7 @@ annealing 1164	1
 answering 1164	1
 antilogic 1164	2 """
 # termfreq = {}
+
 idf = {}
 for key in SORTEDDICT:
     temp = key.split()
@@ -51,6 +53,7 @@ for key in SORTEDDICT:
 # this is N
 total_doc_num = 0
 
+
 with open("total_document_count.txt", "r") as docc:
     total_doc_num = int(docc.read())
     # print("N is " + str(total_doc_num))
@@ -58,14 +61,19 @@ with open("total_document_count.txt", "r") as docc:
 idf = collections.OrderedDict(sorted(idf.items()))
 
 # Get real idf values in dictionary
+# print("IDF goes here: ")
 for key in idf:
     temp = math.log(total_doc_num / idf[key], 10)
     idf[key] = temp
+    # print(key, idf[key])
 
-# OH: Is it okay to access this file when it's not piped
-# Complexity
-# some words are mashed together - csv line what does it do
-# how to properly pipe
+# print(json.dumps(idf, indent=4))
+
+# OH: 
+    # weird csv parsing
+    # can we write files and read later
+    # how to norm factor
+
 
 """ dirr = pathlib.Path("input/test_small.csv")
 with open(dirr, "r") as fil:
@@ -78,32 +86,26 @@ with open(dirr, "r") as fil:
         fil.write(key + "\t" + str(SORTEDDICT[key]) + "\n")
         print(key, SORTEDDICT[key]) """
 
+# print("big_dict goes here: ")
 big_dict = {}
 inverted_dict = {}
 for key in SORTEDDICT:
     term = key.split()[0]
     docid = key.split()[1]
-    
+
     # Build big dict
     if not term in big_dict:
         big_dict[term] = {}
 
     big_dict[term][docid] = SORTEDDICT[key]
-
     # Inverted dict
-    if not docid in inverted_dict:
-        inverted_dict[docid] = {}
 
-    inverted_dict[docid][term] = SORTEDDICT[key]
-    
+# print(json.dumps(big_dict, indent=4))
 # Normalization factors
-norm_fact = {}
-for docid in inverted_dict:
-    norm_sum = 0
-    for term in inverted_dict[docid]:
-        norm_sum += math.pow(inverted_dict[docid][term], 2) * math.pow(idf[term], 2)
-    
-    norm_fact[docid] = norm_sum
+
+# print("inverted dict: ")
+
+
     # inv_map = {v: k for k, v in dict.items()}
 
 # term    idf    docid_x    doc_id_x_freq    .....
@@ -111,21 +113,18 @@ for docid in inverted_dict:
 # LAST part of this reduce func.
 
 for term in big_dict:
-    print(term + "\t", end = '')
-    print(idf[term], "\t", end = '')
     for docid in big_dict[term]:
-        print(docid, "\t", big_dict[term][docid], "\t", norm_fact[docid])
+        print(term, "\t", idf[term], "\t", docid, "\t", big_dict[term][docid])
 
 
-""" for docid in dict:
-    for term in dict[docid]:
-        sum += idf[term]^2 * big_dict[term][docid]^2
+"""
+# ouput of job 1 input of map2
+term    idf     717    freq
+term    idf     1164   freq
 
-Objective:
-build the dicts:
-    big_dict, (close)
-    idf, (done)
-    normal_factor (tricky because we need to loop through each docid not term)
-    with open() """
+# output of map2
+717 term idf freq
+1164 term idf freq
 
-
+# reduce 2 gets the above with same keys
+dictionary of docids  """

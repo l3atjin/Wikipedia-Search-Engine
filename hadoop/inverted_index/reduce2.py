@@ -13,41 +13,45 @@
 import sys
 import collections
 import math
+import json
 
 WORDDICT = {}
+big_dict = {}
 for line in sys.stdin:
-    term = line.split("\t")[0].rstrip()
-    value = line.split("\t")[1].rstrip()
+    words = line.split("\t")
+    docid = words[0].rstrip()
+    term = words[1].rstrip()
+    idf = words[2].rstrip()
+    freq = words[3].rstrip()
 
-    docid = value.split()[0].rstrip()
-    freq = value.split()[1].rstrip()
-
-    if term in WORDDICT:
-        WORDDICT[term][docid] = freq
+    if docid in WORDDICT:
+        WORDDICT[docid][term] = [idf, freq]
     else:
-        WORDDICT[term] = {}
-        WORDDICT[term][docid] = freq
+        WORDDICT[docid] = {}
+        WORDDICT[docid][term] = [idf, freq]
 
-direc = pathlib.Path("tmp/inverted_index.txt")
+    if not term in big_dict:
+        big_dict[term] = {}
 
-idf = {}
+    big_dict[term] = {
+        "docid": docid,
+        "freq": freq,
+        "idf": idf,
+    }
 
-with open("idf.txt", "r") as fil:
-    # Writing data to a file
-    for line in fil:
-        term = line.split()[0].rstrip()
-        value = line.split()[1].rstrip()
-        idf[term] = value
 
-SORTEDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
+WORDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
 
-direc = pathlib.Path("tmp/inverted_index.txt")
-with open(direc, "a") as fil:
-    # Writing data to a file
-    for key in SORTEDDICT:
-        fil.write(key.rstrip() + "\t" + str(idf[key.rstrip()]) + "\t" + str(SORTEDDICT[key]) + "\n")
+norm_fact = {}
 
-SORTEDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
-for key in SORTEDDICT:
-    print(key, SORTEDDICT[key])
+for docid in WORDDICT:
+    norm_sum = 0
+    for term in WORDDICT[docid]:
+        norm_sum += math.pow(float(WORDDICT[docid][term][1]), 2) * math.pow(float(WORDDICT[docid][term][0]), 2)
+    norm_fact[docid] = norm_sum
+
+for term in big_dict:
+    print(term, "\t", big_dict[term]["idf"], "\t", big_dict[term]["docid"], "\t", norm_fact[big_dict[term]["docid"]], "\t", big_dict[term]["freq"])
+
+# print(json.dumps(WORDDICT, indent=4))
 

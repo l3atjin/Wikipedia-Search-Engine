@@ -27,14 +27,5 @@ import re
 
 
 for line in sys.stdin:
-    # print("Printing line")
-    # print(line)
-    # print("#########################################################")
-
-    # term + " " + docid + tab + freq
-    words = line.split()
-    term = words[0].rstrip()
-    docid = words[1].rstrip()
-    freq = words[2].rstrip()
-    print(term + "\t" + docid + " " + freq)
+    print(line, end = '')
 

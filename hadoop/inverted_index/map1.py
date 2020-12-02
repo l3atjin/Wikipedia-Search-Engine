@@ -35,14 +35,14 @@ for row in csv.reader(sys.stdin):
     # print("row is:")
     # print(row[2])
     # print(words)
-    
+
     doc_id = row[0]
-    doc_title = row[1]
-    doc_title = re.sub(r'[^a-zA-Z0-9]+', '', doc_title)
+    title_words = row[1].split()
     # print("doc_id is " + doc_id)
     # print("doc_title is " + doc_title)
     content = row[2].split()
-    content.append(doc_title)
+    for word in title_words:
+        content.append(word)
 
     # Get stopwords list
     stopwords = []

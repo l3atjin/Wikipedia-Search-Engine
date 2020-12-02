@@ -13,41 +13,31 @@
 import sys
 import collections
 import math
+import json
 
 WORDDICT = {}
 for line in sys.stdin:
-    term = line.split("\t")[0].rstrip()
-    value = line.split("\t")[1].rstrip()
-
-    docid = value.split()[0].rstrip()
-    freq = value.split()[1].rstrip()
+    words = line.split("\t")
+    term = words[0].rstrip()
+    idf = words[1].rstrip()
+    docid = words[2].rstrip()
+    norm = words[3].rstrip()
+    freq = words[4].rstrip()
 
     if term in WORDDICT:
-        WORDDICT[term][docid] = freq
+        WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
     else:
         WORDDICT[term] = {}
-        WORDDICT[term][docid] = freq
+        WORDDICT[term]["idf"] = idf
+        WORDDICT[term]["docs"] = []
+        WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
 
-direc = pathlib.Path("tmp/inverted_index.txt")
+WORDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
 
-idf = {}
+for term in WORDDICT:
+    print(term, "\t", WORDDICT[term]["idf"], "\t", end = '')
+    for doc in WORDDICT[term]["docs"]:
+        print(doc["docid"], "\t", doc["freq"], "\t", doc["norm"], "\t", end = '')
+    print("\n", end = '')
 
-with open("idf.txt", "r") as fil:
-    # Writing data to a file
-    for line in fil:
-        term = line.split()[0].rstrip()
-        value = line.split()[1].rstrip()
-        idf[term] = value
-
-SORTEDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
-
-direc = pathlib.Path("tmp/inverted_index.txt")
-with open(direc, "a") as fil:
-    # Writing data to a file
-    for key in SORTEDDICT:
-        fil.write(key.rstrip() + "\t" + str(idf[key.rstrip()]) + "\t" + str(SORTEDDICT[key]) + "\n")
-
-SORTEDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
-for key in SORTEDDICT:
-    print(key, SORTEDDICT[key])
-
+# print(json.dumps(WORDDICT, indent=4))

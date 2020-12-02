@@ -26,22 +26,9 @@ import csv
 import re
 
 for line in sys.stdin:
-    # print("Printing line")
-    # print(line)
-    # print("#########################################################")
-    words = line.split()
-    header = words[0].split(",")
-    doc_id = header[0]
-    doc_title = header[1]
-    doc_title = re.sub(r'[^a-zA-Z0-9]+', '', doc_title)
-    # print("doc_id is " + doc_id)
-    # print("doc_title is " + doc_title)
-    words.append(doc_title)
-    words.pop(0)
-    for word in words:
-        if word.isspace():
-            continue
-        word = re.sub(r'[^a-zA-Z0-9]+', '', word)
-        word = word.lower()
-        print(word + "\t" + doc_id)
-
+    words = line.split("\t")
+    term = words[0].rstrip()
+    idf = words[1].rstrip()
+    docid = words[2].rstrip()
+    freq = words[3].rstrip()
+    print(docid, "\t", term, "\t", idf, "\t", freq)
