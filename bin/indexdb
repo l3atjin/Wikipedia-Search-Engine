@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# lscount
+#
+# List files and folders, followed by a count
+
+# Stop on errors, print commands
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+set -x
+#!/bin/bash
+# insta485db
+
+# Stop on errors
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+
+# Sanity check command line options
+usage() {
+  echo "Usage: $0 (create|destroy|reset|dump)"
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+# Parse argument.  $1 is the first argument
+case $1 in
+  "create")
+    # If Database doesn't already exist 
+    mkdir -p search/search/var/
+    sqlite3 search/search/var/wikipedia.sqlite3 < search/search/sql/wikipedia.sql
+    ;;
+
+  "destroy")
+    rm -f search/search/var/wikipedia.sqlite3
+    ;;
+
+  "reset")
+    rm -f search/search/var/wikipedia.sqlite3
+    mkdir -p search/search/var/
+    sqlite3 search/search/var/wikipedia.sqlite3 < search/search/sql/wikipedia.sql
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

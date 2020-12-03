@@ -142,20 +142,19 @@ def get_results(postid_url_slug):
             temp_list.append(big_dict[word]["idf"] * big_dict[word]["docs"][docid]["freq"])
         # Add docs d_vec to dict of vecs
         d_vector[docid] = temp_list
-    
+
     results = {}
     results["hits"] = []
-    
+
     for docid in d_vector:
         temp_dict = {}
         temp_dict[docid] = vec
         temp_dict["score"] = sum(i[0] * i[1] for i in zip(vec, q_vector))
         results["hits"].append(temp_dict)
-    
+
     context = json.dumps(results)
 
     return flask.jsonify(**context)
-    
 
 # OH questions:
     # Confirm where parts connect with each other

@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# lscount
+#
+# List files and folders, followed by a count
+
+# Stop on errors, print commands
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeuo pipefail
+set -x
+
+usage() {
+  echo "Usage: $0 (create|destroy|reset|dump)"
+}
+
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+# Parse argument.  $1 is the first argument
+case $1 in
+  "start")
+    # If Database doesn't already exist
+    # $output = pgrep -f port 8000
+    echo "starting index server ..."
+    export FLASK_DEBUG=True
+    export FLASK_APP=index
+    flask run --host 0.0.0.0 --port 8001
+    ;;
+
+  "stop")
+    echo "stoping index server ..."
+    pkill -f 'flask run --host 0.0.0.0 --port 8001'
+    ;;
+
+  "restart")
+    echo "stoping index server ..."
+    pkill -f 'flask run --host 0.0.0.0 --port 8001'
+    echo "starting index server ..."
+    export FLASK_DEBUG=True
+    export FLASK_APP=index
+    flask run --host 0.0.0.0 --port 8001
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
