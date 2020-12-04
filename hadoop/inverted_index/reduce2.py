@@ -26,19 +26,19 @@ for line in sys.stdin:
 
     if docid in WORDDICT:
         WORDDICT[docid][term] = [idf, freq]
+        
     else:
         WORDDICT[docid] = {}
         WORDDICT[docid][term] = [idf, freq]
 
     if not term in big_dict:
-        big_dict[term] = {}
+        big_dict[term] = []
 
-    big_dict[term] = {
+    big_dict[term].append({
         "docid": docid,
         "freq": freq,
         "idf": idf,
-    }
-
+    })
 
 WORDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
 
@@ -51,7 +51,9 @@ for docid in WORDDICT:
     norm_fact[docid] = norm_sum
 
 for term in big_dict:
-    print(term, "\t", big_dict[term]["idf"], "\t", big_dict[term]["docid"], "\t", norm_fact[big_dict[term]["docid"]], "\t", big_dict[term]["freq"])
-
+    print(term, "\t", big_dict[term][0]["idf"], "\t", end='')
+    for num in range(0,len(big_dict[term])):
+        print(big_dict[term][num]["docid"], "\t", norm_fact[big_dict[term][num]["docid"]], "\t", big_dict[term][num]["freq"], "\t", end='')
+    print("\n", end='')
 # print(json.dumps(WORDDICT, indent=4))
 

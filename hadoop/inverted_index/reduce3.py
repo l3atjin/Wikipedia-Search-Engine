@@ -17,23 +17,27 @@ import json
 
 WORDDICT = {}
 for line in sys.stdin:
+    line = line.rstrip()
     words = line.split("\t")
     term = words[0].rstrip()
     idf = words[1].rstrip()
-    docid = words[2].rstrip()
-    norm = words[3].rstrip()
-    freq = words[4].rstrip()
 
-    if term in WORDDICT:
-        WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
-    else:
-        WORDDICT[term] = {}
-        WORDDICT[term]["idf"] = idf
-        WORDDICT[term]["docs"] = []
-        WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
+    num = 2
+    while num < len(words): 
+        docid = words[num].rstrip()
+        norm = words[num + 1].rstrip()
+        freq = words[num + 2].rstrip()
 
+        if term in WORDDICT:
+            WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
+        else:
+            WORDDICT[term] = {}
+            WORDDICT[term]["idf"] = idf
+            WORDDICT[term]["docs"] = []
+            WORDDICT[term]["docs"].append({"docid": docid, "norm": norm, "freq": freq})
+        num += 3
 WORDDICT = collections.OrderedDict(sorted(WORDDICT.items()))
-
+# print("length of big dict:  ", len(WORDDICT))
 for term in WORDDICT:
     print(term, "\t", WORDDICT[term]["idf"], "\t", end = '')
     for doc in WORDDICT[term]["docs"]:

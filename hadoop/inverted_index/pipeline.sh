@@ -63,6 +63,8 @@ hadoop \
   -mapper ./map3.py \
   -reducer ./reduce3.py \
 
+cat output3/part-00000 output3/part-00001 output3/part-00002 output3/part-00003 > inverted_index.txt
+
 echo before comment
 : <<'END'
 # Run second MapReduce job
