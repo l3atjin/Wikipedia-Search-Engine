@@ -9,7 +9,7 @@ APPLICATION_ROOT = '/'
 INDEX_API_URL = "http://localhost:8001/api/v1/hits/"
 
 # File Upload to var/uploads/
-SEARCH_ROOT = pathlib.Path(__file__).resolve().parent.parent
+SEARCH_ROOT = pathlib.Path(__file__).resolve().parent
 # UPLOAD_FOLDER = INSTA485_ROOT/'var'/'uploads'
 # ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 # MAX_CONTENT_LENGTH = 16 * 1024 * 1024

@@ -21,12 +21,28 @@ fi
 # Parse argument.  $1 is the first argument
 case $1 in
   "start")
+    # OUTPUT="$(pgrep -f flask)"
+    # echo ${OUTPUT}
+    # echo ${OUTPUT}
     # If Database doesn't already exist
-    # $output = pgrep -f port 8000
-    echo "starting index server ..."
-    export FLASK_DEBUG=True
-    export FLASK_APP=index
-    flask run --host 0.0.0.0 --port 8001
+
+    # if [ -z ${OUTPUT} ]
+    # then
+      # echo "starting index server ..."
+      # export FLASK_APP=index
+      # flask run --host 0.0.0.0 --port 8001 &> /dev/null &
+    # else
+      # echo "already running."
+    # fi
+
+    if [[ -z $(pgrep -f 'flask run --host 0.0.0.0 --port 8001') ]]; then
+      echo "starting index server ..."
+      export FLASK_APP=index
+      flask run --host 0.0.0.0 --port 8001 &> /dev/null &
+    else
+      echo "already running."
+    fi
+    
     ;;
 
   "stop")
@@ -38,9 +54,8 @@ case $1 in
     echo "stoping index server ..."
     pkill -f 'flask run --host 0.0.0.0 --port 8001'
     echo "starting index server ..."
-    export FLASK_DEBUG=True
     export FLASK_APP=index
-    flask run --host 0.0.0.0 --port 8001
+    flask run --host 0.0.0.0 --port 8001 &> /dev/null &
     ;;
   *)
     usage
